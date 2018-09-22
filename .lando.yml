@@ -1,0 +1,54 @@
+name: authentication
+recipe: lemp
+config:
+    webroot: public
+    database: mariadb
+    xdebug: true
+
+proxy:
+    pma:
+        - pma.lemp.lndo.site
+
+services:
+    appserver:
+        type: "php"
+        version: "7.2"
+        config:
+            server: nginx.conf
+
+    database:
+        creds:
+            user: lemp
+            password: lemp
+            database: authentication
+
+    pma:
+        type: phpmyadmin
+        hosts:
+            - database
+
+tooling:
+    sf:
+        service: appserver
+        description: "Run Symfony commands: lando sf [command]"
+        cmd:
+            - bin/console
+    phpunit:
+        service: appserver
+        description: "Run PHP Unit tests: lando phpunit [options]"
+        cmd:
+            - bin/phpunit --colors=always --coverage-html=build/phpunit/coverage
+    phplint:
+        service: appserver
+        description: "Run PHP lint: lando phplint [options]"
+        cmd:
+            - vendor/bin/phplint -vvv --no-cache --configuration=./.phplint.yml
+    phpmetrics:
+        service: appserver
+        description: "Run PHP metrics: lando phpmetrics [options]"
+        cmd:
+            - vendor/bin/phpmetrics --report-html=build/phpmetrics src/
+events:
+    post-start:
+        - appserver: "bin/console doctrine:migration:migrate --no-interaction"
+        - appserver: "bin/console doctrine:schema:validate"
