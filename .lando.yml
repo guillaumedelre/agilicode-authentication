@@ -2,12 +2,12 @@ name: authentication
 recipe: lemp
 config:
     webroot: public
-    database: mariadb
     xdebug: true
 
 proxy:
     pma:
         - pma.lemp.lndo.site
+        - mariadb.lndo.site
 
 services:
     appserver:
@@ -17,15 +17,24 @@ services:
             server: nginx.conf
 
     database:
+        type: mariadb:10.3
         creds:
             user: lemp
             password: lemp
             database: authentication
 
+    database_test:
+        type: mariadb:10.3
+        creds:
+            user: lemp
+            password: lemp
+            database: authentication_test
+
     pma:
         type: phpmyadmin
         hosts:
             - database
+            - database_test
 
 tooling:
     sf:
@@ -38,6 +47,11 @@ tooling:
         description: "Run PHP Unit tests: lando phpunit [options]"
         cmd:
             - bin/phpunit --colors=always --coverage-html=build/phpunit/coverage
+    behat:
+        service: appserver
+        description: "Run Behat tests: lando behat [options]"
+        cmd:
+            - vendor/bin/behat
     phplint:
         service: appserver
         description: "Run PHP lint: lando phplint [options]"
@@ -52,3 +66,6 @@ events:
     post-start:
         - appserver: "bin/console doctrine:migration:migrate --no-interaction"
         - appserver: "bin/console doctrine:schema:validate"
+
+        - appserver: "bin/console doctrine:migration:migrate --no-interaction --env=test"
+        - appserver: "bin/console doctrine:schema:validate --env=test"

@@ -6,6 +6,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "api-platform/api-pack": "^1.1",
+        "csa/guzzle-bundle": "^3.1",
         "doctrine/doctrine-migrations-bundle": "^1.3",
         "gfreeau/get-jwt-bundle": "^2.0",
         "lexik/jwt-authentication-bundle": "^2.5",
@@ -13,12 +14,31 @@
         "symfony/dotenv": "*",
         "symfony/flex": "^1.1",
         "symfony/framework-bundle": "*",
-        "symfony/test-pack": "^1.0",
-        "symfony/yaml": "*"
+        "symfony/monolog-bundle": "^3.3",
+        "symfony/yaml": "*",
+        "willdurand/negotiation": "^2.3"
     },
     "require-dev": {
+        "behat-extension/doctrine-data-fixtures-extension": "^5.0",
+        "behat/behat": "^3.5",
+        "behat/symfony2-extension": "^2.1",
+        "doctrine/data-fixtures": "^1.3",
+        "doctrine/doctrine-fixtures-bundle": "^3.0",
+        "hautelook/alice-bundle": "^2.2",
+        "imbo/behat-api-extension": "^2.1",
         "overtrue/phplint": "^1.1",
-        "phpmetrics/phpmetrics": "^2.4"
+        "peekmo/jsonpath": "dev-master",
+        "phpmetrics/phpmetrics": "^2.4",
+        "rdx/behat-variables": "^1.2",
+        "symfony/debug": "*",
+        "symfony/debug-pack": "^1.0",
+        "symfony/maker-bundle": "^1.7",
+        "symfony/orm-pack": "^1.0",
+        "symfony/phpunit-bridge": "*",
+        "symfony/profiler-pack": "^1.0",
+        "symfony/test-pack": "^1.0",
+        "symfony/var-dumper": "*",
+        "theofidry/alice-data-fixtures": "^1.1"
     },
     "config": {
         "preferred-install": {
@@ -62,7 +82,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "4.1.*"
+            "require": ">=3.4"
         }
     }
 }

@@ -13,13 +13,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * Class Privilege
+ * Class Permission
  * @package App\Entity
  * @ORM\Entity()
  * @ORM\Table(
  *      uniqueConstraints={
  *          @ORM\UniqueConstraint(
- *              name="privilege_unique_application_user",
+ *              name="permission_unique_application_user",
  *              columns={"application_id", "user_id"}
  *          )
  *      }
@@ -27,7 +27,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @UniqueEntity({"application", "user"})
  * @ApiPlatform\ApiResource()
  */
-class Privilege
+class Permission
 {
     /**
      * @var int
@@ -39,7 +39,7 @@ class Privilege
 
     /**
      * @var Application
-     * @ORM\ManyToOne(targetEntity="App\Entity\Application", inversedBy="privileges")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Application", inversedBy="permissions")
      * @ORM\JoinColumn(name="application_id", referencedColumnName="id", nullable=true, onDelete="SET NULL")
      * @ApiPlatform\ApiSubresource(maxDepth=1)
      */
@@ -47,7 +47,7 @@ class Privilege
 
     /**
      * @var User
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="privileges")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="permissions")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=true, onDelete="SET NULL")
      * @ApiPlatform\ApiSubresource(maxDepth=1)
      */
@@ -64,9 +64,9 @@ class Privilege
     /**
      * @param int $id
      *
-     * @return Privilege
+     * @return Permission
      */
-    public function setId(int $id): Privilege
+    public function setId(int $id): Permission
     {
         $this->id = $id;
 
@@ -84,9 +84,9 @@ class Privilege
     /**
      * @param Application $application
      *
-     * @return Privilege
+     * @return Permission
      */
-    public function setApplication(Application $application): Privilege
+    public function setApplication(Application $application): Permission
     {
         $this->application = $application;
 
@@ -104,9 +104,9 @@ class Privilege
     /**
      * @param User $user
      *
-     * @return Privilege
+     * @return Permission
      */
-    public function setUser(User $user): Privilege
+    public function setUser(User $user): Permission
     {
         $this->user = $user;
 

@@ -13,6 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class UserRole
@@ -21,7 +22,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Table(
  *      uniqueConstraints={
  *          @ORM\UniqueConstraint(
- *              name="role_unique_label",
+ *              name="user_role_unique_label",
  *              columns={"label"}
  *          )
  *      }
@@ -42,6 +43,7 @@ class UserRole
     /**
      * @var string
      * @ORM\Column(type="string", unique=true)
+     * @Assert\NotBlank()
      */
     private $label = '';
 
@@ -49,17 +51,17 @@ class UserRole
      * @var User[]|ArrayCollection|Collection
      * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="userRoles")
      * @ORM\JoinTable(
-     *      name="user_privilege",
+     *      name="roles_users",
      *      joinColumns={
      *          @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      *      },
      *      inverseJoinColumns={
-     *          @ORM\JoinColumn(name="privilege_id", referencedColumnName="id", unique=true)
+     *          @ORM\JoinColumn(name="user_role_id", referencedColumnName="id", unique=true)
      *      }
      * )
      * @ApiPlatform\ApiSubresource(maxDepth=1)
      */
-    private $users;
+    protected $users;
 
     /**
      * UserRole constructor.

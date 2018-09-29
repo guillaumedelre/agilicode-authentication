@@ -14,6 +14,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class User
@@ -43,40 +44,42 @@ class User implements UserInterface
     /**
      * @var string
      * @ORM\Column(type="string", unique=true)
+     * @Assert\NotBlank()
      */
-    private $username;
+    private $username = '';
 
     /**
      * @var string
      * @ORM\Column(type="string", length=500)
+     * @Assert\NotBlank()
      */
-    private $password;
+    private $password = '';
 
     /**
      * @var bool
-     * @ORM\Column(name="is_active", type="boolean")
+     * @ORM\Column(name="is_active", type="boolean", options={"default": false})
      */
-    private $isActive;
+    private $isActive = false;
 
     /**
      * @var UserRole[]|ArrayCollection|Collection
-     * @ORM\ManyToMany(targetEntity="UserRole", mappedBy="users", cascade={"persist", "remove"})
+     * @ORM\ManyToMany(targetEntity="App\Entity\UserRole", mappedBy="users", cascade={"persist", "remove"})
      * @ApiPlatform\ApiSubresource(maxDepth=1)
      */
     private $userRoles;
 
     /**
-     * @var Privilege[]|ArrayCollection|Collection
-     * @ORM\OneToMany(targetEntity="App\Entity\Privilege", mappedBy="user", cascade={"persist", "remove"})
+     * @var Permission[]|ArrayCollection|Collection
+     * @ORM\OneToMany(targetEntity="App\Entity\Permission", mappedBy="user", cascade={"persist", "remove"})
      * @ApiPlatform\ApiSubresource(maxDepth=1)
      */
-    private $privileges;
+    private $permissions;
 
     public function __construct()
     {
         $this->isActive = true;
         $this->userRoles = new ArrayCollection();
-        $this->privileges = new ArrayCollection();
+        $this->permissions = new ArrayCollection();
     }
 
     /**
@@ -233,52 +236,52 @@ class User implements UserInterface
     }
 
     /**
-     * @return Privilege[]|ArrayCollection|Collection
+     * @return Permission[]|ArrayCollection|Collection
      */
-    public function getPrivileges()
+    public function getPermissions()
     {
-        return $this->privileges;
+        return $this->permissions;
     }
 
     /**
-     * @param Privilege[]|ArrayCollection|Collection $privileges
+     * @param Permission[]|ArrayCollection|Collection $permissions
      *
      * @return User
      */
-    public function setPrivileges(array $privileges = []): User
+    public function setPermissions(array $permissions = []): User
     {
-        foreach ($privileges as $privilege) {
-            $this->addPrivilege($privilege);
+        foreach ($permissions as $permission) {
+            $this->addPermission($permission);
         }
 
         return $this;
     }
 
     /**
-     * @param Privilege $privilege
+     * @param Permission $permission
      *
      * @return User
      */
-    public function addPrivilege(Privilege $privilege): User
+    public function addPermission(Permission $permission): User
     {
-        if (!$this->privileges->contains($privilege)) {
-            $this->privileges->add($privilege);
-            $privilege->setUser($this);
+        if (!$this->permissions->contains($permission)) {
+            $this->permissions->add($permission);
+            $permission->setUser($this);
         }
 
         return $this;
     }
 
     /**
-     * @param Privilege $privilege
+     * @param Permission $permission
      *
      * @return User
      */
-    public function removePrivilege(Privilege $privilege): User
+    public function removePersona(Permission $permission): User
     {
-        if ($this->privileges->contains($privilege)) {
-            $this->privileges->removeElement($privilege);
-            $privilege->setUser(null);
+        if ($this->permissions->contains($permission)) {
+            $this->permissions->removeElement($permission);
+            $permission->setUser(null);
         }
 
         return $this;

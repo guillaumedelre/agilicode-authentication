@@ -14,3 +14,4 @@ token:
 register:
     path:     /register
     controller: App\Controller\DefaultController::register
+    methods:  [POST]

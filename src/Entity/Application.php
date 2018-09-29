@@ -13,6 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Application
@@ -42,8 +43,9 @@ class Application
     /**
      * @var string
      * @ORM\Column(type="string", unique=true)
+     * @Assert\NotBlank()
      */
-    private $label;
+    private $label = '';
 
     /**
      * @var bool
@@ -52,16 +54,16 @@ class Application
     private $isActive;
 
     /**
-     * @var Privilege[]|ArrayCollection|Collection
-     * @ORM\OneToMany(targetEntity="App\Entity\Privilege", mappedBy="user", cascade={"persist", "remove"})
+     * @var Permission[]|ArrayCollection|Collection
+     * @ORM\OneToMany(targetEntity="App\Entity\Permission", mappedBy="application", cascade={"persist", "remove"})
      * @ApiPlatform\ApiSubresource(maxDepth=1)
      */
-    private $privileges;
+    private $permissions;
 
     public function __construct()
     {
         $this->isActive = true;
-        $this->privileges = new ArrayCollection();
+        $this->permissions = new ArrayCollection();
     }
 
     /**
@@ -125,52 +127,52 @@ class Application
 
 
     /**
-     * @return Privilege[]|ArrayCollection|Collection
+     * @return Permission[]|ArrayCollection|Collection
      */
-    public function getPrivileges()
+    public function getPersonas()
     {
-        return $this->privileges;
+        return $this->permission;
     }
 
     /**
-     * @param Privilege[]|ArrayCollection|Collection $privileges
+     * @param Permission[]|ArrayCollection|Collection $permissions
      *
      * @return Application
      */
-    public function setPrivileges(array $privileges = []): Application
+    public function setPermissions(array $permissions = []): Application
     {
-        foreach ($privileges as $privilege) {
-            $this->addPrivilege($privilege);
+        foreach ($permissions as $permission) {
+            $this->addPermission($permission);
         }
 
         return $this;
     }
 
     /**
-     * @param Privilege $privilege
+     * @param Permission $permission
      *
      * @return Application
      */
-    public function addPrivilege(Privilege $privilege): Application
+    public function addPermission(Permission $permission): Application
     {
-        if (!$this->privileges->contains($privilege)) {
-            $this->privileges->add($privilege);
-            $privilege->setApplication($this);
+        if (!$this->permission->contains($permission)) {
+            $this->permission->add($permission);
+            $permission->setApplication($this);
         }
 
         return $this;
     }
 
     /**
-     * @param Privilege $privilege
+     * @param Permission $permission
      *
      * @return Application
      */
-    public function removePrivilege(Privilege $privilege): Application
+    public function removePersona(Permission $permission): Application
     {
-        if ($this->privileges->contains($privilege)) {
-            $this->privileges->removeElement($privilege);
-            $privilege->setApplication(null);
+        if ($this->permission->contains($permission)) {
+            $this->permission->removeElement($permission);
+            $permission->setApplication(null);
         }
 
         return $this;
