@@ -1,0 +1,66 @@
+App\Entity\Application:
+    application__myapp:
+        label: myApp
+        enabled: true
+
+App\Entity\Permission:
+    permission__create_something_on_myapp:
+        label: create_something
+        application: '@application__myapp'
+    permission__read_something_on_myapp:
+        label: read_something
+        application: '@application__myapp'
+    permission__update_something_on_myapp:
+        label: update_something
+        application: '@application__myapp'
+    permission__delete_something_on_myapp:
+        label: delete_something
+        application: '@application__myapp'
+    permission__clone_something_on_myapp:
+        label: clone_share
+        application: '@application__myapp'
+    permission__share_something_on_myapp:
+        label: comment_share
+        application: '@application__myapp'
+
+App\Entity\Role:
+    role__admin:
+        label: administrator
+        application: '@application__myapp'
+    role__user:
+        label: user
+        application: '@application__myapp'
+    role__test:
+        label: test
+        application: '@application__myapp'
+    role__service:
+        label: service
+        application: '@application__myapp'
+
+App\Entity\User:
+    user__admin:
+        username: gdelre
+        password: gdelre
+        enabled: true
+    user__johndoe:
+        username: johndoe
+        password: johndoe
+    user__myapp:
+        username: myApp
+        password: myApp
+        enabled: true
+        service: true
+
+App\Entity\Privilege:
+    privilege__admin_on_myapp:
+        application: '@application__myapp'
+        user: '@user__admin'
+        roles: ['@role__admin','@role__test']
+    privilege__user_on_myapp:
+        application: '@application__myapp'
+        user: '@user__johndoe'
+        roles: ['@role__user']
+    privilege__myapp_on_myapp:
+        application: '@application__myapp'
+        user: '@user__myapp'
+        roles: ['@role__service']

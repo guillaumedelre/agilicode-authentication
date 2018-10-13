@@ -13,6 +13,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -22,13 +24,30 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(
  *      uniqueConstraints={
  *          @ORM\UniqueConstraint(
- *              name="application_unique_label",
+ *              name="application__unique__label",
  *              columns={"label"}
  *          )
  *      }
  * )
  * @UniqueEntity("label")
- * @ApiPlatform\ApiResource()
+ * @ApiPlatform\ApiResource(
+ *     normalizationContext={"groups"={"application_get"}},
+ *     itemOperations={
+ *         "get"={"method"="GET"},
+ *         "put"={
+ *             "normalization_context"={"groups"={"application_put"}},
+ *             "denormalization_context"={"groups"={"application_put"}}
+ *         },
+ *         "delete"={"method"="DELETE"}
+ *     },
+ *     collectionOperations={
+ *         "get"={"method"="GET"},
+ *         "post"={
+ *             "normalization_context"={"groups"={"application_post"}},
+ *             "denormalization_context"={"groups"={"application_post"}}
+ *         }
+ *     }
+ * )
  */
 class Application
 {
@@ -37,6 +56,7 @@ class Application
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"application_get", "application_post", "application_put"})
      */
     private $id;
 
@@ -44,26 +64,50 @@ class Application
      * @var string
      * @ORM\Column(type="string", unique=true)
      * @Assert\NotBlank()
+     * @Groups({"application_get", "application_post", "application_put"})
      */
     private $label = '';
 
     /**
      * @var bool
-     * @ORM\Column(name="is_active", type="boolean")
+     * @ORM\Column(type="boolean", options={"default": false})
+     * @Groups({"application_get", "application_post", "application_put"})
      */
-    private $isActive;
+    private $enabled = false;
 
     /**
      * @var Permission[]|ArrayCollection|Collection
-     * @ORM\OneToMany(targetEntity="App\Entity\Permission", mappedBy="application", cascade={"persist", "remove"})
-     * @ApiPlatform\ApiSubresource(maxDepth=1)
+     * @ORM\OneToMany(targetEntity="App\Entity\Permission", mappedBy="application")
+     * @Groups({"application_get"})
      */
     private $permissions;
 
+    /**
+     * @var Role[]|ArrayCollection|Collection
+     * @ORM\OneToMany(targetEntity="App\Entity\Role", mappedBy="application")
+     * @Groups({"application_get"})
+     */
+    private $roles;
+
+    /**
+     * @var Privilege[]|ArrayCollection|Collection
+     * @ORM\OneToMany(targetEntity="App\Entity\Privilege", mappedBy="application")
+     * @Groups({"application_get"})
+     */
+    private $privileges;
+
+    /**
+     * @var User[]|ArrayCollection|Collection
+     * @Groups({"application_get"})
+     */
+    private $users;
+
     public function __construct()
     {
-        $this->isActive = true;
+        $this->privileges = new ArrayCollection();
+        $this->users = new ArrayCollection();
         $this->permissions = new ArrayCollection();
+        $this->roles = new ArrayCollection();
     }
 
     /**
@@ -89,19 +133,19 @@ class Application
     /**
      * @return bool
      */
-    public function isActive(): bool
+    public function isEnabled(): bool
     {
-        return $this->isActive;
+        return $this->enabled;
     }
 
     /**
-     * @param bool $isActive
+     * @param bool $enabled
      *
      * @return Application
      */
-    public function setIsActive(bool $isActive): Application
+    public function setEnabled(bool $enabled): Application
     {
-        $this->isActive = $isActive;
+        $this->enabled = $enabled;
 
         return $this;
     }
@@ -125,57 +169,43 @@ class Application
         return $this;
     }
 
-
     /**
      * @return Permission[]|ArrayCollection|Collection
      */
-    public function getPersonas()
+    public function getPermissions()
     {
-        return $this->permission;
+        return $this->permissions;
     }
 
     /**
-     * @param Permission[]|ArrayCollection|Collection $permissions
-     *
-     * @return Application
+     * @return Role[]|ArrayCollection|Collection
      */
-    public function setPermissions(array $permissions = []): Application
+    public function getRoles()
     {
-        foreach ($permissions as $permission) {
-            $this->addPermission($permission);
-        }
-
-        return $this;
+        return $this->roles;
     }
 
     /**
-     * @param Permission $permission
-     *
-     * @return Application
+     * @return User[]|ArrayCollection|Collection
+     * @Groups({"application_get"})
      */
-    public function addPermission(Permission $permission): Application
+    public function getUsers()
     {
-        if (!$this->permission->contains($permission)) {
-            $this->permission->add($permission);
-            $permission->setApplication($this);
+        $users = [];
+        foreach ($this->privileges as $privilege) {
+            $users[] = $privilege->getUser();
         }
 
-        return $this;
+        return $users;
     }
 
     /**
-     * @param Permission $permission
-     *
-     * @return Application
+     * @return Privilege[]|ArrayCollection|Collection
+     * @Groups({"application_get"})
      */
-    public function removePersona(Permission $permission): Application
+    public function getPrivileges()
     {
-        if ($this->permission->contains($permission)) {
-            $this->permission->removeElement($permission);
-            $permission->setApplication(null);
-        }
-
-        return $this;
+        return $this->privileges;
     }
 
 }

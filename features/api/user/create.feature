@@ -5,10 +5,10 @@ Feature: User
   Background:
     Given the following fixtures are loaded:
     """
-    api/crud-user.yaml
+    crud-api.yaml
     """
     And the "X-APP-ENV" request header is "test"
-    Given the jwt for "admin"
+    Given the jwt for "gdelre"
     And I save it into "XBearer"
 
   Scenario: create a user with empty payload
@@ -20,6 +20,10 @@ Feature: User
     """
     When I request "/api/users" using HTTP POST
     Then the response code is 400
+    And the response body is:
+    """
+    {"@context":"\/api\/contexts\/ConstraintViolationList","@type":"ConstraintViolationList","hydra:title":"An error occurred","hydra:description":"username: This value should not be blank.","violations":[{"propertyPath":"username","message":"This value should not be blank."}]}
+    """
 
   Scenario: create a user with minimal payload
     Given the "Authorization" request header is "Bearer <<XBearer>>"
@@ -33,9 +37,10 @@ Feature: User
     """
     When I request "/api/users" using HTTP POST
     Then the response code is 201
-    And the JSON node "$.@type" should be equal to "User"
-    And the JSON node "$.username" should be equal to "test"
-    And the JSON node "$.password" should not be an empty string
+    And the response body is:
+    """
+    {"@context":"\/api\/contexts\/User","@id":"\/api\/users\/4","@type":"User","id":4,"username":"test","enabled":false,"service":false,"privileges":[]}
+    """
 
   Scenario: check unicity on username
     Given the "Authorization" request header is "Bearer <<XBearer>>"
@@ -58,8 +63,7 @@ Feature: User
     """
     When I request "/api/users" using HTTP POST
     Then the response code is 400
-    And the JSON node "$.@type" should be equal to "ConstraintViolationList"
-    And the JSON node "$.hydra:description" should be equal to "username: This value is already used."
-    And the JSON node "$.violations" should have 1 elements
-    And the JSON node "$.violations.0.propertyPath" should be equal to "username"
-    And the JSON node "$.violations.0.message" should be equal to "This value is already used."
+    And the response body is:
+    """
+    {"@context":"\/api\/contexts\/ConstraintViolationList","@type":"ConstraintViolationList","hydra:title":"An error occurred","hydra:description":"username: This value is already used.","violations":[{"propertyPath":"username","message":"This value is already used."}]}
+    """

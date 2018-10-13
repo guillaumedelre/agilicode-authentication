@@ -1,6 +1,6 @@
-Feature: User
+Feature: Application
   In order to use the application
-  I need to be able to update users trough the API.
+  I need to be able to update applications trough the API.
 
   Background:
     Given the following fixtures are loaded:
@@ -11,46 +11,46 @@ Feature: User
     Given the jwt for "gdelre"
     And I save it into "XBearer"
 
-  Scenario: update a user with minimal payload
+  Scenario: update a application with minimal payload
     Given the "Authorization" request header is "Bearer <<XBearer>>"
     And the "Content-Type" request header is "application/json"
     And the request body is:
     """
     {
-        "username": "updated"
+        "label": "updated"
     }
     """
-    When I request "/api/users/2" using HTTP PUT
+    When I request "/api/applications/1" using HTTP PUT
     Then the response code is 200
     And the response body is:
     """
-    {"@context":"\/api\/contexts\/User","@id":"\/api\/users\/2","@type":"User","id":2,"username":"updated","enabled":false,"service":false,"privileges":["\/api\/privileges\/2"]}
+    {"@context":"\/api\/contexts\/Application","@id":"\/api\/applications\/1","@type":"Application","id":1,"label":"updated","enabled":true}
     """
 
-  Scenario: enable/disable a user
+  Scenario: disable/enable an application
     Given the "Authorization" request header is "Bearer <<XBearer>>"
     And the "Content-Type" request header is "application/json"
-    And the request body is:
-    """
-    {
-        "enabled": true
-    }
-    """
-    When I request "/api/users/2" using HTTP PUT
-    Then the response code is 200
-    And the response body is:
-    """
-    {"@context":"\/api\/contexts\/User","@id":"\/api\/users\/2","@type":"User","id":2,"username":"johndoe","enabled":true,"service":false,"privileges":["\/api\/privileges\/2"]}
-    """
     And the request body is:
     """
     {
         "enabled": false
     }
     """
-    When I request "/api/users/2" using HTTP PUT
+    When I request "/api/applications/1" using HTTP PUT
     Then the response code is 200
     And the response body is:
     """
-    {"@context":"\/api\/contexts\/User","@id":"\/api\/users\/2","@type":"User","id":2,"username":"johndoe","enabled":false,"service":false,"privileges":["\/api\/privileges\/2"]}
+    {"@context":"\/api\/contexts\/Application","@id":"\/api\/applications\/1","@type":"Application","id":1,"label":"myApp","enabled":false}
+    """
+    And the request body is:
+    """
+    {
+        "enabled": true
+    }
+    """
+    When I request "/api/applications/1" using HTTP PUT
+    Then the response code is 200
+    And the response body is:
+    """
+    {"@context":"\/api\/contexts\/Application","@id":"\/api\/applications\/1","@type":"Application","id":1,"label":"myApp","enabled":true}
     """

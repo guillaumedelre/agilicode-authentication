@@ -14,7 +14,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * Class User
@@ -23,13 +25,31 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(
  *      uniqueConstraints={
  *          @ORM\UniqueConstraint(
- *              name="user_unique_username",
+ *              name="user__unique__username",
  *              columns={"username"}
  *          )
  *      }
  * )
  * @UniqueEntity("username")
- * @ApiPlatform\ApiResource()
+ * @ApiPlatform\ApiResource(
+ *     normalizationContext={"groups"={"user_get"}},
+ *     itemOperations={
+ *         "get"={"method"="GET"},
+ *         "put"={
+ *             "normalization_context"={"groups"={"user_put"}},
+ *             "denormalization_context"={"groups"={"user_put"}}
+ *         },
+ *         "delete"={"method"="DELETE"}
+ *     },
+ *     collectionOperations={
+ *         "get"={"method"="GET"},
+ *         "post"={
+ *             "normalization_context"={"groups"={"user_post"}},
+ *             "denormalization_context"={"groups"={"user_post"}}
+ *         }
+ *     }
+ * )
+ * @ApiPlatform\ApiFilter(SearchFilter::class, properties={"username": "iexact"})
  */
 class User implements UserInterface
 {
@@ -38,6 +58,7 @@ class User implements UserInterface
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"user_get", "user_post", "user_put"})
      */
     private $id;
 
@@ -45,6 +66,7 @@ class User implements UserInterface
      * @var string
      * @ORM\Column(type="string", unique=true)
      * @Assert\NotBlank()
+     * @Groups({"user_get", "user_post", "user_put"})
      */
     private $username = '';
 
@@ -57,29 +79,29 @@ class User implements UserInterface
 
     /**
      * @var bool
-     * @ORM\Column(name="is_active", type="boolean", options={"default": false})
+     * @ORM\Column(type="boolean", options={"default": false})
+     * @Groups({"user_get", "user_post", "user_put"})
      */
-    private $isActive = false;
+    private $enabled = false;
 
     /**
-     * @var UserRole[]|ArrayCollection|Collection
-     * @ORM\ManyToMany(targetEntity="App\Entity\UserRole", mappedBy="users", cascade={"persist", "remove"})
-     * @ApiPlatform\ApiSubresource(maxDepth=1)
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": false})
+     * @Groups({"user_get", "user_post", "user_put"})
      */
-    private $userRoles;
+    private $service = false;
 
     /**
-     * @var Permission[]|ArrayCollection|Collection
-     * @ORM\OneToMany(targetEntity="App\Entity\Permission", mappedBy="user", cascade={"persist", "remove"})
-     * @ApiPlatform\ApiSubresource(maxDepth=1)
+     * @var Privilege[]|ArrayCollection|Collection
+     * @ORM\OneToMany(targetEntity="App\Entity\Privilege", mappedBy="user", cascade={"persist","remove"})
+     * @Groups({"user_get", "user_post", "user_put"})
+     * @ApiPlatform\ApiSubresource()
      */
-    private $permissions;
+    private $privileges;
 
     public function __construct()
     {
-        $this->isActive = true;
-        $this->userRoles = new ArrayCollection();
-        $this->permissions = new ArrayCollection();
+        $this->privileges = new ArrayCollection();
     }
 
     /**
@@ -105,21 +127,37 @@ class User implements UserInterface
     /**
      * @return bool
      */
-    public function isActive(): bool
+    public function isEnabled(): bool
     {
-        return $this->isActive;
+        return $this->enabled;
     }
 
     /**
-     * @param bool $isActive
+     * @param bool $enabled
      *
      * @return User
      */
-    public function setIsActive(bool $isActive): User
+    public function setEnabled(bool $enabled): User
     {
-        $this->isActive = $isActive;
+        $this->enabled = $enabled;
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isService(): bool
+    {
+        return $this->service;
+    }
+
+    /**
+     * @param bool $service
+     */
+    public function setService(bool $service): void
+    {
+        $this->service = $service;
     }
 
     /**
@@ -176,115 +214,13 @@ class User implements UserInterface
     public function getRoles(): array
     {
         $roles = [];
-        foreach ($this->userRoles as $userRole) {
-            $roles[] = $userRole->getLabel();
+        foreach ($this->privileges as $privilege) {
+            foreach ($privilege->getRoles() as $role) {
+                $roles[] = $role->getLabel();
+            }
         }
 
-        return $roles;
-    }
-
-    /**
-     * @return UserRole[]|ArrayCollection|Collection
-     */
-    public function getUserRoles()
-    {
-        return $this->userRoles;
-    }
-
-    /**
-     * @param UserRole[]|ArrayCollection|Collection $userRoles
-     *
-     * @return User
-     */
-    public function setUserRoles(array $userRoles = []): User
-    {
-        foreach ($userRoles as $userRole) {
-            $this->addUserRole($userRole);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param UserRole $userRole
-     *
-     * @return User
-     */
-    public function addUserRole(UserRole $userRole): User
-    {
-        if (!$this->userRoles->contains($userRole)) {
-            $this->userRoles->add($userRole);
-            $userRole->addUser($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param UserRole $userRole
-     *
-     * @return User
-     */
-    public function removeUserRole(UserRole $userRole): User
-    {
-        if ($this->userRoles->contains($userRole)) {
-            $this->userRoles->removeElement($userRole);
-            $userRole->removeUser($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Permission[]|ArrayCollection|Collection
-     */
-    public function getPermissions()
-    {
-        return $this->permissions;
-    }
-
-    /**
-     * @param Permission[]|ArrayCollection|Collection $permissions
-     *
-     * @return User
-     */
-    public function setPermissions(array $permissions = []): User
-    {
-        foreach ($permissions as $permission) {
-            $this->addPermission($permission);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param Permission $permission
-     *
-     * @return User
-     */
-    public function addPermission(Permission $permission): User
-    {
-        if (!$this->permissions->contains($permission)) {
-            $this->permissions->add($permission);
-            $permission->setUser($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param Permission $permission
-     *
-     * @return User
-     */
-    public function removePersona(Permission $permission): User
-    {
-        if ($this->permissions->contains($permission)) {
-            $this->permissions->removeElement($permission);
-            $permission->setUser(null);
-        }
-
-        return $this;
+        return array_unique($roles);
     }
 
     /**
@@ -293,4 +229,25 @@ class User implements UserInterface
     public function eraseCredentials()
     {
     }
+
+    /**
+     * @return Privilege[]|ArrayCollection|Collection
+     */
+    public function getPrivileges()
+    {
+        return $this->privileges;
+    }
+
+    /**
+     * @param Privilege[]|ArrayCollection|Collection $privileges
+     *
+     * @return User
+     */
+    public function setPrivileges(array $privileges = []): User
+    {
+        $this->privileges = new ArrayCollection($privileges);
+
+        return $this;
+    }
+
 }

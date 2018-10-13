@@ -15,45 +15,45 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class Permission
+ * Class Role
  * @package App\Entity
  * @ORM\Entity()
  * @ORM\Table(
  *      uniqueConstraints={
  *          @ORM\UniqueConstraint(
- *              name="permission__unique__label_application",
+ *              name="role__unique__label__application",
  *              columns={"label", "application_id"}
  *          )
  *      }
  * )
  * @UniqueEntity({"label", "application"})
  * @ApiPlatform\ApiResource(
- *     normalizationContext={"groups"={"permission_get"}},
+ *     normalizationContext={"groups"={"role_get"}},
  *     itemOperations={
  *         "get"={"method"="GET"},
  *         "put"={
- *             "normalization_context"={"groups"={"permission_put"}},
- *             "denormalization_context"={"groups"={"permission_put"}}
+ *             "normalization_context"={"groups"={"role_put"}},
+ *             "denormalization_context"={"groups"={"role_put"}}
  *         },
  *         "delete"={"method"="DELETE"}
  *     },
  *     collectionOperations={
  *         "get"={"method"="GET"},
  *         "post"={
- *             "normalization_context"={"groups"={"permission_post"}},
- *             "denormalization_context"={"groups"={"permission_post"}}
+ *             "normalization_context"={"groups"={"role_post"}},
+ *             "denormalization_context"={"groups"={"role_post"}}
  *         }
  *     }
  * )
  */
-class Permission
+class Role
 {
     /**
      * @var int
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"permission_get", "permission_post", "permission_put"})
+     * @Groups({"role_get", "role_post", "role_put"})
      */
     private $id;
 
@@ -61,16 +61,17 @@ class Permission
      * @var string
      * @ORM\Column(type="string")
      * @Assert\NotBlank()
-     * @Groups({"permission_get", "permission_post", "permission_put"})
+     * @Groups({"role_get", "role_post", "role_put"})
      */
     private $label = '';
 
     /**
      * @var Application
-     * @ORM\ManyToOne(targetEntity="App\Entity\Application", inversedBy="permissions")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Application", inversedBy="roles")
      * @ORM\JoinColumn(name="application_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
+     * @Assert\NotBlank()
      * @Assert\Valid()
-     * @Groups({"permission_get", "permission_post", "permission_put"})
+     * @Groups({"role_get", "role_post", "role_put"})
      */
     private $application;
 
@@ -85,12 +86,11 @@ class Permission
     /**
      * @param int $id
      *
-     * @return Permission
+     * @return Role
      */
-    public function setId(int $id): Permission
+    public function setId(int $id): Role
     {
         $this->id = $id;
-
         return $this;
     }
 
@@ -103,13 +103,13 @@ class Permission
     }
 
     /**
-     * @var string $label
-     * @return Permission
+     * @param string $label
+     *
+     * @return Role
      */
-    public function setLabel(string $label): Permission
+    public function setLabel(string $label): Role
     {
         $this->label = $label;
-
         return $this;
     }
 
@@ -124,12 +124,13 @@ class Permission
     /**
      * @param Application
      *
-     * @return Permission
+     * @return Role
      */
-    public function setApplication($application): Permission
+    public function setApplication($application): Role
     {
         $this->application = $application;
 
         return $this;
     }
+
 }

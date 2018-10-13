@@ -5,10 +5,10 @@ Feature: User
   Background:
     Given the following fixtures are loaded:
     """
-    api/crud-user.yaml
+    crud-api.yaml
     """
     And the "X-APP-ENV" request header is "test"
-    Given the jwt for "admin"
+    Given the jwt for "gdelre"
     And I save it into "XBearer"
 
   Scenario: read a user collection
@@ -16,40 +16,17 @@ Feature: User
     And the "Content-Type" request header is "application/json"
     When I request "/api/users" using HTTP GET
     Then the response code is 200
-    And the JSON node "$.hydra:totalItems" should be equal to 2
-    And the JSON node "$.hydra:member" should have 2 elements
+    And the response body is:
+    """
+    {"@context":"\/api\/contexts\/User","@id":"\/api\/users","@type":"hydra:Collection","hydra:member":[{"@id":"\/api\/users\/1","@type":"User","id":1,"username":"gdelre","enabled":true,"service":false,"privileges":["\/api\/privileges\/1"]},{"@id":"\/api\/users\/2","@type":"User","id":2,"username":"johndoe","enabled":false,"service":false,"privileges":["\/api\/privileges\/2"]},{"@id":"\/api\/users\/3","@type":"User","id":3,"username":"myApp","enabled":true,"service":true,"privileges":["\/api\/privileges\/3"]}],"hydra:totalItems":3}
+    """
 
-    And the JSON node "$.hydra:member.0.@type" should be equal to "User"
-    And the JSON node "$.hydra:member.0.@id" should be equal to "/api/users/1"
-    And the JSON node "$.hydra:member.0.username" should be equal to "admin"
-    And the JSON node "$.hydra:member.0.password" should not be an empty string
-    And the JSON node "$.hydra:member.0.roles" should have 1 elements
-    And the JSON node "$.hydra:member.0.roles.0" should be equal to "administrator"
-    And the JSON node "$.hydra:member.0.userRoles" should have 1 elements
-    And the JSON node "$.hydra:member.0.userRoles.0" should be equal to "/api/user_roles/1"
-    And the JSON node "$.hydra:member.0.permissions" should have 0 elements
-
-    And the JSON node "$.hydra:member.1.@type" should be equal to "User"
-    And the JSON node "$.hydra:member.1.@id" should be equal to "/api/users/2"
-    And the JSON node "$.hydra:member.1.username" should be equal to "johndoe"
-    And the JSON node "$.hydra:member.1.password" should not be an empty string
-    And the JSON node "$.hydra:member.1.roles" should have 1 elements
-    And the JSON node "$.hydra:member.1.roles.0" should be equal to "user"
-    And the JSON node "$.hydra:member.1.userRoles" should have 1 elements
-    And the JSON node "$.hydra:member.1.userRoles.0" should be equal to "/api/user_roles/2"
-    And the JSON node "$.hydra:member.1.permissions" should have 0 elements
-
-  Scenario: create a user item
+  Scenario: read a user item
     Given the "Authorization" request header is "Bearer <<XBearer>>"
     And the "Content-Type" request header is "application/json"
     When I request "/api/users/1" using HTTP GET
     Then the response code is 200
-    And the JSON node "$.@type" should be equal to "User"
-    And the JSON node "$.@id" should be equal to "/api/users/1"
-    And the JSON node "$.username" should be equal to "admin"
-    And the JSON node "$.password" should not be an empty string
-    And the JSON node "$.roles" should have 1 elements
-    And the JSON node "$.roles.0" should be equal to "administrator"
-    And the JSON node "$.userRoles" should have 1 elements
-    And the JSON node "$.userRoles.0" should be equal to "/api/user_roles/1"
-    And the JSON node "$.permissions" should have 0 elements
+    And the response body is:
+    """
+    {"@context":"\/api\/contexts\/User","@id":"\/api\/users\/1","@type":"User","id":1,"username":"gdelre","enabled":true,"service":false,"privileges":["\/api\/privileges\/1"]}
+    """

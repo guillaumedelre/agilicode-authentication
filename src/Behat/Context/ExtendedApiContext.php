@@ -167,6 +167,33 @@ class ExtendedApiContext extends ApiContext
     }
 
     /**
+     * @Then the JSON node :node should be true
+     */
+    public function theJsonNodeShouldBeTrue($node)
+    {
+        try {
+            Assertion::true(
+                $this->evaluateJsonResponse($node)
+            );
+        } catch (AssertionFailure $e) {
+            throw new AssertionFailedException($e->getMessage());
+        }
+    }
+    /**
+     * @Then the JSON node :node should be false
+     */
+    public function theJsonNodeShouldBeFalse($node)
+    {
+        try {
+            Assertion::false(
+                $this->evaluateJsonResponse($node)
+            );
+        } catch (AssertionFailure $e) {
+            throw new AssertionFailedException($e->getMessage());
+        }
+    }
+
+    /**
      * @param string $node
      *
      * @return mixed
@@ -184,8 +211,12 @@ class ExtendedApiContext extends ApiContext
      */
     private function getLastResponseContents(): string
     {
+        echo "\nMINIFY\n";
+        echo $this->response->getBody()->getContents();
+        echo "\nPRETTY\n";
         $this->response->getBody()->rewind();
+        $store = new JsonStore($this->response->getBody()->getContents());
 
-        return $this->response->getBody()->getContents();
+        return json_encode($store->toArray(), JSON_PRETTY_PRINT);
     }
 }
