@@ -18,7 +18,7 @@ Feature: User
     Then the response code is 200
     And the response body is:
     """
-    {"@context":"\/api\/contexts\/User","@id":"\/api\/users","@type":"hydra:Collection","hydra:member":[{"@id":"\/api\/users\/1","@type":"User","id":1,"username":"gdelre","enabled":true,"service":false,"privileges":["\/api\/privileges\/1"]},{"@id":"\/api\/users\/2","@type":"User","id":2,"username":"johndoe","enabled":false,"service":false,"privileges":["\/api\/privileges\/2"]},{"@id":"\/api\/users\/3","@type":"User","id":3,"username":"myApp","enabled":true,"service":true,"privileges":["\/api\/privileges\/3"]}],"hydra:totalItems":3}
+    {"@context":"\/api\/contexts\/User","@id":"\/api\/users","@type":"hydra:Collection","hydra:member":[{"@id":"\/api\/users\/1","@type":"User","id":1,"username":"gdelre","enabled":true,"service":false,"privileges":["\/api\/privileges\/1"],"preferences":["\/api\/preferences\/1"]},{"@id":"\/api\/users\/2","@type":"User","id":2,"username":"johndoe","enabled":false,"service":false,"privileges":["\/api\/privileges\/2"],"preferences":["\/api\/preferences\/2"]},{"@id":"\/api\/users\/3","@type":"User","id":3,"username":"myApp","enabled":true,"service":true,"privileges":["\/api\/privileges\/3"],"preferences":["\/api\/preferences\/3"]}],"hydra:totalItems":3,"hydra:search":{"@type":"hydra:IriTemplate","hydra:template":"\/api\/users{?username}","hydra:variableRepresentation":"BasicRepresentation","hydra:mapping":[{"@type":"IriTemplateMapping","variable":"username","property":"username","required":false}]}}
     """
 
   Scenario: read a user item
@@ -28,5 +28,5 @@ Feature: User
     Then the response code is 200
     And the response body is:
     """
-    {"@context":"\/api\/contexts\/User","@id":"\/api\/users\/1","@type":"User","id":1,"username":"gdelre","enabled":true,"service":false,"privileges":["\/api\/privileges\/1"]}
+    {"@context":"\/api\/contexts\/User","@id":"\/api\/users\/1","@type":"User","id":1,"username":"gdelre","enabled":true,"service":false,"privileges":["\/api\/privileges\/1"],"preferences":["\/api\/preferences\/1"]}
     """

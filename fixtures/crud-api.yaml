@@ -23,6 +23,20 @@ App\Entity\Permission:
         label: comment_share
         application: '@application__myapp'
 
+App\Entity\Preference:
+    preference__admin_on_myapp:
+        user: '@user__admin'
+        application: '@application__myapp'
+        data: []
+    preference__johndoe_on_myapp:
+        user: '@user__johndoe'
+        application: '@application__myapp'
+        data: []
+    preference__myapp_on_myapp:
+        user: '@user__myapp'
+        application: '@application__myapp'
+        data: []
+
 App\Entity\Role:
     role__admin:
         label: administrator

@@ -67,5 +67,8 @@ events:
         - appserver: "bin/console doctrine:migration:migrate --no-interaction"
         - appserver: "bin/console doctrine:schema:validate"
 
+        - appserver: "bin/console app::auth:register"
+        - appserver: "bin/console app::auth:token"
+
         - appserver: "bin/console doctrine:migration:migrate --no-interaction --env=test"
         - appserver: "bin/console doctrine:schema:validate --env=test"

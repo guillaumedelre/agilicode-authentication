@@ -97,6 +97,13 @@ class Application
     private $privileges;
 
     /**
+     * @var Preference[]|ArrayCollection|Collection
+     * @ORM\OneToMany(targetEntity="App\Entity\Preference", mappedBy="application")
+     * @Groups({"application_get"})
+     */
+    private $preferences;
+
+    /**
      * @var User[]|ArrayCollection|Collection
      * @Groups({"application_get"})
      */
@@ -107,6 +114,7 @@ class Application
         $this->privileges = new ArrayCollection();
         $this->users = new ArrayCollection();
         $this->permissions = new ArrayCollection();
+        $this->preferences = new ArrayCollection();
         $this->roles = new ArrayCollection();
     }
 
@@ -206,6 +214,15 @@ class Application
     public function getPrivileges()
     {
         return $this->privileges;
+    }
+
+    /**
+     * @return Preference[]|ArrayCollection|Collection
+     * @Groups({"application_get"})
+     */
+    public function getPreferences()
+    {
+        return $this->preferences;
     }
 
 }

@@ -39,7 +39,7 @@ Feature: User
     Then the response code is 201
     And the response body is:
     """
-    {"@context":"\/api\/contexts\/User","@id":"\/api\/users\/4","@type":"User","id":4,"username":"test","enabled":false,"service":false,"privileges":[]}
+    {"@context":"\/api\/contexts\/User","@id":"\/api\/users\/4","@type":"User","id":4,"username":"test","enabled":false,"service":false,"privileges":[],"preferences":[]}
     """
 
   Scenario: check unicity on username

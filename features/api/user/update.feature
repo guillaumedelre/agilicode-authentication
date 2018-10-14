@@ -24,7 +24,7 @@ Feature: User
     Then the response code is 200
     And the response body is:
     """
-    {"@context":"\/api\/contexts\/User","@id":"\/api\/users\/2","@type":"User","id":2,"username":"updated","enabled":false,"service":false,"privileges":["\/api\/privileges\/2"]}
+    {"@context":"\/api\/contexts\/User","@id":"\/api\/users\/2","@type":"User","id":2,"username":"updated","enabled":false,"service":false,"privileges":["\/api\/privileges\/2"],"preferences":["\/api\/preferences\/2"]}
     """
 
   Scenario: enable/disable a user
@@ -40,7 +40,7 @@ Feature: User
     Then the response code is 200
     And the response body is:
     """
-    {"@context":"\/api\/contexts\/User","@id":"\/api\/users\/2","@type":"User","id":2,"username":"johndoe","enabled":true,"service":false,"privileges":["\/api\/privileges\/2"]}
+    {"@context":"\/api\/contexts\/User","@id":"\/api\/users\/2","@type":"User","id":2,"username":"johndoe","enabled":true,"service":false,"privileges":["\/api\/privileges\/2"],"preferences":["\/api\/preferences\/2"]}
     """
     And the request body is:
     """
@@ -52,5 +52,5 @@ Feature: User
     Then the response code is 200
     And the response body is:
     """
-    {"@context":"\/api\/contexts\/User","@id":"\/api\/users\/2","@type":"User","id":2,"username":"johndoe","enabled":false,"service":false,"privileges":["\/api\/privileges\/2"]}
+    {"@context":"\/api\/contexts\/User","@id":"\/api\/users\/2","@type":"User","id":2,"username":"johndoe","enabled":false,"service":false,"privileges":["\/api\/privileges\/2"],"preferences":["\/api\/preferences\/2"]}
     """

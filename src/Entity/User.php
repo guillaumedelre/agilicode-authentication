@@ -99,9 +99,18 @@ class User implements UserInterface
      */
     private $privileges;
 
+    /**
+     * @var Preference[]|ArrayCollection|Collection
+     * @ORM\OneToMany(targetEntity="App\Entity\Preference", mappedBy="user", cascade={"persist","remove"})
+     * @Groups({"user_get", "user_post", "user_put"})
+     * @ApiPlatform\ApiSubresource()
+     */
+    private $preferences;
+
     public function __construct()
     {
         $this->privileges = new ArrayCollection();
+        $this->preferences = new ArrayCollection();
     }
 
     /**
@@ -246,6 +255,26 @@ class User implements UserInterface
     public function setPrivileges(array $privileges = []): User
     {
         $this->privileges = new ArrayCollection($privileges);
+
+        return $this;
+    }
+
+    /**
+     * @return Preference[]|ArrayCollection|Collection
+     */
+    public function getPreferences()
+    {
+        return $this->preferences;
+    }
+
+    /**
+     * @param Preference[]|ArrayCollection|Collection $preferences
+     *
+     * @return User
+     */
+    public function setPreferences(array $preferences = []): User
+    {
+        $this->preferences = new ArrayCollection($preferences);
 
         return $this;
     }
