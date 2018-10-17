@@ -55,15 +55,18 @@ App\Entity\User:
     user__admin:
         username: gdelre
         password: gdelre
+        refreshToken: 5a4bc728-d1d6-11e8-a8d5-f2801f1b9fd1
         enabled: true
     user__johndoe:
         username: johndoe
         password: johndoe
+        refreshToken: c6d19778-d1e6-11e8-a8d5-f2801f1b9fd1
     user__myapp:
         username: myApp
         password: myApp
         enabled: true
         service: true
+        refreshToken: 6a122b48-d1d6-11e8-a8d5-f2801f1b9fd1
 
 App\Entity\Privilege:
     privilege__admin_on_myapp:

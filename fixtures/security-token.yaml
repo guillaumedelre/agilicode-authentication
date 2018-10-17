@@ -1,0 +1,6 @@
+App\Entity\User:
+    user__admin:
+        username: gdelre
+        password: gdelre
+        refreshToken: 5a4bc728-d1d6-11e8-a8d5-f2801f1b9fd1
+        enabled: true

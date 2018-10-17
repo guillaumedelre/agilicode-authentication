@@ -11,6 +11,7 @@
         "dunglas/doctrine-json-odm": "^0.1.2",
         "gfreeau/get-jwt-bundle": "^2.0",
         "lexik/jwt-authentication-bundle": "^2.5",
+        "ramsey/uuid": "^3.8",
         "symfony/console": "*",
         "symfony/dotenv": "*",
         "symfony/flex": "^1.1",

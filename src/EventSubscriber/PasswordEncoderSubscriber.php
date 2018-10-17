@@ -5,7 +5,7 @@ namespace App\EventSubscriber;
 use ApiPlatform\Core\EventListener\EventPriorities;
 use ApiPlatform\Core\Util\RequestAttributesExtractor;
 use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class PasswordEncodeSubscriber implements EventSubscriberInterface
+class PasswordEncoderSubscriber implements EventSubscriberInterface
 {
     /**
      * @var UserPasswordEncoderInterface
@@ -21,9 +21,9 @@ class PasswordEncodeSubscriber implements EventSubscriberInterface
     private $encoder;
 
     /**
-     * @var EntityManagerInterface
+     * @var ObjectRepository
      */
-    private $manager;
+    private $repository;
 
     /**
      * PasswordEncodeSubscriber constructor.
@@ -34,7 +34,8 @@ class PasswordEncodeSubscriber implements EventSubscriberInterface
     public function __construct(UserPasswordEncoderInterface $encoder, RegistryInterface $registry)
     {
         $this->encoder = $encoder;
-        $this->manager = $registry->getManager();
+        $this->repository = $registry->getRepository(User::class);
+
     }
 
     public function onKernelRequest(GetResponseEvent $event)
@@ -66,7 +67,7 @@ class PasswordEncodeSubscriber implements EventSubscriberInterface
 
         if (Request::METHOD_PUT === $method) {
             /** @var User $user */
-            $user = $this->manager->getRepository(User::class)->findOneBy(
+            $user = $this->repository->findOneBy(
                 [
                     'username' => $data->getUsername(),
                     'password' => $data->getPassword(),

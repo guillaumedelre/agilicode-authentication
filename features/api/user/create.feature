@@ -32,14 +32,15 @@ Feature: User
     """
     {
         "username": "test",
-        "password": "test"
+        "password": "test",
+        "refreshToken": "5a4bc728-d1d6-11e8-a8d5-f2801f1b9fd1"
     }
     """
     When I request "/api/users" using HTTP POST
     Then the response code is 201
     And the response body is:
     """
-    {"@context":"\/api\/contexts\/User","@id":"\/api\/users\/4","@type":"User","id":4,"username":"test","enabled":false,"service":false,"privileges":[],"preferences":[]}
+    {"@context":"\/api\/contexts\/User","@id":"\/api\/users\/4","@type":"User","id":4,"username":"test","refreshToken":"5a4bc728-d1d6-11e8-a8d5-f2801f1b9fd1","enabled":false,"service":false,"privileges":[],"preferences":[]}
     """
 
   Scenario: check unicity on username
@@ -58,7 +59,8 @@ Feature: User
     """
     {
         "username": "test",
-        "password": "test"
+        "password": "test",
+        "refreshToken": "5a4bc728-d1d6-11e8-a8d5-f2801f1b9fd1"
     }
     """
     When I request "/api/users" using HTTP POST

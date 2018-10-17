@@ -11,12 +11,12 @@ Feature: User
     Given the jwt for "gdelre"
     And I save it into "XBearer"
 
-  Scenario: create a user with empty payload
+  Scenario: find a user by username
     Given the "Authorization" request header is "Bearer <<XBearer>>"
     And the "Content-Type" request header is "application/json"
     When I request "/api/users?username=gdelre" using HTTP GET
     Then the response code is 200
     And the response body is:
     """
-    {"@context":"\/api\/contexts\/User","@id":"\/api\/users","@type":"hydra:Collection","hydra:member":[{"@id":"\/api\/users\/1","@type":"User","id":1,"username":"gdelre","enabled":true,"service":false,"privileges":["\/api\/privileges\/1"],"preferences":["\/api\/preferences\/1"]}],"hydra:totalItems":1,"hydra:view":{"@id":"\/api\/users?username=gdelre","@type":"hydra:PartialCollectionView"},"hydra:search":{"@type":"hydra:IriTemplate","hydra:template":"\/api\/users{?username}","hydra:variableRepresentation":"BasicRepresentation","hydra:mapping":[{"@type":"IriTemplateMapping","variable":"username","property":"username","required":false}]}}
+    {"@context":"\/api\/contexts\/User","@id":"\/api\/users","@type":"hydra:Collection","hydra:member":[{"@id":"\/api\/users\/1","@type":"User","id":1,"username":"gdelre","refreshToken":"5a4bc728-d1d6-11e8-a8d5-f2801f1b9fd1","enabled":true,"service":false,"privileges":["\/api\/privileges\/1"],"preferences":["\/api\/preferences\/1"]}],"hydra:totalItems":1,"hydra:view":{"@id":"\/api\/users?username=gdelre","@type":"hydra:PartialCollectionView"},"hydra:search":{"@type":"hydra:IriTemplate","hydra:template":"\/api\/users{?username}","hydra:variableRepresentation":"BasicRepresentation","hydra:mapping":[{"@type":"IriTemplateMapping","variable":"username","property":"username","required":false}]}}
     """

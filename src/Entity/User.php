@@ -78,6 +78,13 @@ class User implements UserInterface
     private $password = '';
 
     /**
+     * @var string
+     * @ORM\Column(type="string", nullable=true)
+     * @Groups({"user_get", "user_post", "user_put"})
+     */
+    private $refreshToken = '';
+
+    /**
      * @var bool
      * @ORM\Column(type="boolean", options={"default": false})
      * @Groups({"user_get", "user_post", "user_put"})
@@ -129,6 +136,26 @@ class User implements UserInterface
     public function setId(int $id): User
     {
         $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRefreshToken(): string
+    {
+        return $this->refreshToken;
+    }
+
+    /**
+     * @param string $refreshToken
+     *
+     * @return User
+     */
+    public function setRefreshToken(string $refreshToken)
+    {
+        $this->refreshToken = $refreshToken;
 
         return $this;
     }
